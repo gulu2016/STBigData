@@ -1,8 +1,7 @@
 package cn.gulu.bigdata.hdfs;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,5 +65,53 @@ public class hadoopJavaApiDemo {
         //第二个参数为true是递归删除
         boolean delete = fs.delete(new Path("/x"), true);
         System.out.println(delete);
+    }
+
+    @Test
+    //测试修改文件夹的名称
+    public void testRenameDir() throws IOException {
+        boolean change = fs.rename(new Path("/x"),new Path("/xx"));
+        System.out.println(change);
+    }
+
+    @Test
+    //测试查看目录信息功能
+    public void testListFiles() throws IOException {
+        RemoteIterator<LocatedFileStatus> listFiles = fs.listFiles(new Path("/"),true);
+
+        while (listFiles.hasNext()){
+            LocatedFileStatus status = listFiles.next();
+            System.out.println(status.getPath().getName());
+            System.out.println(status.getBlockSize());
+            System.out.println(status.getPermission());
+            System.out.println(status.getLen());
+
+            BlockLocation[] blockLocations = status.getBlockLocations();
+            for(BlockLocation bl:blockLocations){
+                System.out.println("block-length:"+bl.getLength()+"--"+
+                        "block-offset:"+bl.getOffset());
+                String[] hosts = bl.getHosts();
+
+                for(String host:hosts){
+                    System.out.println(host);
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    @Test
+    //查看文件以及文件夹信息
+    public void testListAll() throws IOException {
+        FileStatus[] listStatus = fs.listStatus(new Path("/"));
+
+        String flag = "d-----------------";
+        for(FileStatus fileStatus:listStatus){
+            if(fileStatus.isFile())
+                flag = "f----------------";
+            else
+                flag = "d----------------";
+            System.out.println(flag+fileStatus.getPath().getName());
+        }
     }
 }
