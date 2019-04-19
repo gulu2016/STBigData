@@ -77,15 +77,18 @@ public class hadoopJavaApiDemo {
     @Test
     //测试查看目录信息功能
     public void testListFiles() throws IOException {
+        //第二个参数为true表示递归调用
         RemoteIterator<LocatedFileStatus> listFiles = fs.listFiles(new Path("/"),true);
 
         while (listFiles.hasNext()){
+            //打印各种文件信息，和命令行中执行 hdfs dfs -lsr / 效果一样
             LocatedFileStatus status = listFiles.next();
             System.out.println(status.getPath().getName());
             System.out.println(status.getBlockSize());
             System.out.println(status.getPermission());
             System.out.println(status.getLen());
 
+            //打印文件的每个分组位置，每128M一个分组
             BlockLocation[] blockLocations = status.getBlockLocations();
             for(BlockLocation bl:blockLocations){
                 System.out.println("block-length:"+bl.getLength()+"--"+
