@@ -1,4 +1,4 @@
-package cn.gulu.bigdata.mr.MRDemos;
+package cn.gulu.bigdata.mr.wordcount;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;

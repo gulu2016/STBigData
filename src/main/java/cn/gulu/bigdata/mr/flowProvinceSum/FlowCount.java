@@ -15,7 +15,7 @@ import java.io.IOException;
 /**
  * @ProjectName: STBigData
  * @Package: cn.gulu.bigdata.mr.flowsum
- * @ClassName: FlowCount
+ * @ClassName: FlowCountSort
  * @Description: java类作用描述
  * @Author: gulu
  * @CreateDate: 19-5-1 下午6:36

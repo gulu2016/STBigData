@@ -1,4 +1,4 @@
-package cn.gulu.bigdata.mr.MRDemos;
+package cn.gulu.bigdata.mr.wordcountWithCombiner;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -23,8 +23,14 @@ import java.io.IOException;
  * @Version: 1.0
  */
 
-//该程序是配置mr运行条件，并启动mr的程序
-//相当于一个yarn客户端，yarn是分配资源的
+/*
+1.该程序和wordcount的不同就是使用了combiner，
+combiner程序可以在mapper程序输出结果的时候对每个reduce分区进行汇总
+由于在wordcount中combiner做的事情和reducer做的事情是一样的，所以这里直接使用WordcountReducer
+类作为combiner
+2.combiner使用需要注意业务场景，如果reduce但是对每个分区求平均数，那么就不适合中间使用combiner
+这是因为局部汇总结果会导致最终结果不一致。
+* */
 public class WordcountDriver {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Configuration configuration = new Configuration();
@@ -44,6 +50,10 @@ public class WordcountDriver {
         //设置最终(也就是reduce)输出的数据类型
         job.setOutputKeyClass(Text.class);
         job.setMapOutputValueClass(IntWritable.class);
+
+        //指定需要使用的combiner,在wordcount案例中，combiner就是局部汇总，
+        //所以可以直接使用WordcountReducer类作为combiner
+        job.setCombinerClass(WordcountReducer.class);
 
         //指定job输入原始文件所在目录
         FileInputFormat.setInputPaths(job,new Path(args[0]));
