@@ -77,6 +77,7 @@ public class RJoin {
         @Override
         protected void reduce(Text pid, Iterable<InfoBean> beans, Context context) throws IOException, InterruptedException {
             InfoBean pdBean = new InfoBean();
+            InfoBean odBean = new InfoBean();
             ArrayList<InfoBean> orderBeans = new ArrayList<>();
 
             for (InfoBean bean:beans){
@@ -89,9 +90,9 @@ public class RJoin {
                         e.printStackTrace();
                     }
                 }else {
-                    InfoBean odBean = new InfoBean();
                     try {
                         BeanUtils.copyProperties(odBean,bean);
+                        orderBeans.add(odBean);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     } catch (InvocationTargetException e) {
@@ -101,12 +102,12 @@ public class RJoin {
             }
 
             //3.拼接两类数据形成最终结果
-            for(InfoBean bean :orderBeans){
-                bean.setPname(pdBean.getPname());
-                bean.setCategory_id(pdBean.getCategory_id());
-                bean.setPrice(pdBean.getPrice());
+            for(InfoBean ansbean :orderBeans){
+                ansbean.setPname(pdBean.getPname());
+                ansbean.setCategory_id(pdBean.getCategory_id());
+                ansbean.setPrice(pdBean.getPrice());
 
-                context.write(bean,NullWritable.get());
+                context.write(ansbean,NullWritable.get());
             }
         }
     }
