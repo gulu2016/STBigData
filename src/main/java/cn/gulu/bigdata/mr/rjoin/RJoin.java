@@ -34,9 +34,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 /*
+* 问题描述：有两个文件orders和product,现在要使用mr对两个文件的记录进行join操作
+* */
+
+/*
 * 1.关于Mapper泛型的设置
 * 2.对数据的封装过程是怎样的
-* 3.拼接两类数据形成最终结果
+* 3.如何进行拼接两类数据的
 * */
 public class RJoin {
 
@@ -102,6 +106,11 @@ public class RJoin {
             }
 
             //3.拼接两类数据形成最终结果
+            //这里的逻辑是：product的信息是不变的，而order信息有多个，
+            //到达reduceTask的<k,v>可以表示成<pid,order1><pid,order2><pid,order3>...<pid,product1>
+            //也就是有多个<pid,order>和一个<pid,product>
+            //已经使用list对<pid,order>进行存储，现在要做的就是用一个<pid,product>和所有的<pid,order>拼接一次
+            //每次拼接完成后都要进行write
             for(InfoBean ansbean :orderBeans){
                 ansbean.setPname(pdBean.getPname());
                 ansbean.setCategory_id(pdBean.getCategory_id());
