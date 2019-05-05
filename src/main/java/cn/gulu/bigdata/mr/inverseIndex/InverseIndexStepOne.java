@@ -38,8 +38,6 @@ import java.io.IOException;
 * 2.第一阶段的reducetask的任务是什么
 * */
 
-
-
 public class InverseIndexStepOne {
 
     static class InverseIndexStepOneMapper extends Mapper<LongWritable, Text,Text, IntWritable>{
