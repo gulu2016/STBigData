@@ -30,6 +30,9 @@ import java.util.Map;
  * @Version: 1.0
  */
 
+/*
+* 问题：现在要使用map端进行Join操作，这样做的好处是可以避免数据倾斜（大量数据发往同一个reducetask中）
+* */
 
 /*
 * 1.在map端进行join需要什么，为什么这么做可以避免数据倾斜
