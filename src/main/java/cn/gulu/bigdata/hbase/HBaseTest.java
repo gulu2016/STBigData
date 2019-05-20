@@ -32,6 +32,7 @@ import java.io.IOException;
 * 2.如何创建表
 * 3.删除表
 * 4.向表中插入数据
+* 5.删除数据
 * */
 public class HBaseTest {
 
