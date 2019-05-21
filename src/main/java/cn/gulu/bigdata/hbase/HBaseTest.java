@@ -7,6 +7,7 @@ import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.filter.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.After;
 import org.junit.Before;
@@ -33,6 +34,10 @@ import java.io.IOException;
 * 3.删除表
 * 4.向表中插入数据
 * 5.删除数据
+* 6.单条查询
+* 7.全表扫描
+* 8.全表扫描，带有where条件
+* 9.全表扫描，带有前缀过滤器
 * */
 public class HBaseTest {
 
@@ -102,6 +107,61 @@ public class HBaseTest {
         delete.addColumn(Bytes.toBytes("info1"),Bytes.toBytes("name"));
         //5.2删除操作
         table.delete(delete);
+    }
+
+
+    //6.单条查询
+    @Test
+    public void queryData() throws IOException {
+        //6.1 创建封装查询条件的类
+        Get get = new Get(Bytes.toBytes("xxx"));
+        //6.2 创建查询，指定列族和列名
+        Result result = table.get(get);
+        byte[] sex = result.getValue(Bytes.toBytes("info2"),Bytes.toBytes("sex"));
+        System.out.println(Bytes.toInt(sex));
+    }
+
+    //7.扫描(7.1,7.2)
+    @Test
+    public void scanData() throws IOException {
+        //7.1设置全表扫描封装类
+        Scan scan = new Scan();
+        //7.2扫描
+        ResultScanner scanner = table.getScanner(scan);
+        for(Result result:scanner){
+            byte[] name = result.getValue(Bytes.toBytes("info1"),Bytes.toBytes("name"));
+            System.out.println(Bytes.toString(name));
+        }
+    }
+
+    //8.全表扫描过滤器(8.1,8.2)
+    @Test
+    public void scanDataByFilter1() throws IOException {
+        //8.1设置查询条件
+        SingleColumnValueFilter singleColumnValueFilter = new SingleColumnValueFilter(
+                Bytes.toBytes("info1"),Bytes.toBytes("name"),
+                CompareFilter.CompareOp.EQUAL,Bytes.toBytes("zhangsan"));
+        Scan scan = new Scan();
+        scan.setFilter(singleColumnValueFilter);
+        //8.2全表扫描
+        ResultScanner scanner = table.getScanner(scan);
+        for(Result result:scanner){
+            byte[] name = result.getValue(Bytes.toBytes("info1"),Bytes.toBytes("name"));
+            System.out.println(Bytes.toString(name));
+        }
+    }
+
+    //9.设置前缀过滤器
+    @Test
+    public void scanDataByFilter2() throws IOException {
+        Filter f = new RowFilter(CompareFilter.CompareOp.EQUAL,new RegexStringComparator("^xx"));
+        Scan scan = new Scan();
+        scan.setFilter(f);
+        ResultScanner scanner = table.getScanner(scan);
+        for(Result result:scanner){
+            byte[] sex = result.getValue(Bytes.toBytes("info1"),Bytes.toBytes("sex"));
+            System.out.println(Bytes.toInt(sex));
+        }
     }
 
     @After
