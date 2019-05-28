@@ -39,6 +39,7 @@ public class StormWordCount {
         Config config = new Config();
         config.setNumWorkers(2);
 
+
         //3.提交任务,分为集群模式和本地模式
         //StormSubmitter.submitTopology("mywordcount",config,topologyBuilder.createTopology());
 
